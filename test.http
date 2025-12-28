@@ -1,0 +1,65 @@
+POST http://localhost:3000/register
+Content-Type: application/json
+
+{
+  "email": "hero@test.com",
+  "password": "supersecretpassword"
+}
+
+### Teste de Login
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+  "email": "hero@test.com",
+  "password": "supersecretpassword"
+}
+
+### Testar Acesso Protegido
+GET http://localhost:3000/dashboard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJoZXJvQHRlc3QuY29tIiwiaWF0IjoxNzY2NTk0NzAwLCJleHAiOjE3NjY1OTgzMDB9.K8wM1Hw9HLXhmh3Gac-zpfq91aSfA_WEztj-FcKOpJ8
+
+### Test: Create a new user (Happy Path)
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "name": "admin",
+  "email": "admin@example.com",
+  "password": "securePassword123456",
+  "role": "admin"
+}
+
+### Test: Login (Get Token)
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "securePassword123456"
+}
+
+### Test: Access Protected Profile
+GET http://localhost:3000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2Njc3OTg1OCwiZXhwIjoxNzY2NzgzNDU4fQ.hSzo_kH0t0-NGC8W9K6nu-1SAv4WLCi5muCoJMVqFHs
+Content-Type: application/json
+
+### Adicionar item ao carrinho
+POST http://localhost:3000/cart
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2Njc3OTg1OCwiZXhwIjoxNzY2NzgzNDU4fQ.hSzo_kH0t0-NGC8W9K6nu-1SAv4WLCi5muCoJMVqFHs
+Content-Type: application/json
+
+{
+  "product_id": 17,
+  "quantity": 3
+}
+
+
+### Ver meu carrinho
+GET http://localhost:3000/cart
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2Njc3OTg1OCwiZXhwIjoxNzY2NzgzNDU4fQ.hSzo_kH0t0-NGC8W9K6nu-1SAv4WLCi5muCoJMVqFHs
+
+### Finalizar Compra (Checkout)
+POST http://localhost:3000/checkout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2Njk0MTIwMiwiZXhwIjoxNzY2OTQ0ODAyfQ.uTvdDl3asa2DfXlOf2Q-6QuzZSsIsBHUtGD-oFQx6_s

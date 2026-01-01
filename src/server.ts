@@ -24,37 +24,55 @@ app.use(cartRoutes);
 const secretKey = process.env.JWT_SECRET;
 
 app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+
+    const { name, email, password, address, phone } = req.body;
 
     try {
-
-        const checkUser = await query('SELECT * FROM users WHERE email = $1', [email]);
-
-        if (checkUser.rows.length > 0) {
-            return res.status(400).json({ message: 'Email already in use' });
-        }
-
-
         const hashedPassword = await hashPassword(password);
 
 
-        const insertQuery = 'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id';
-        const result = await query(insertQuery, [email, hashedPassword]);
+        const insertQuery = 'INSERT INTO users (name, email, password_hash, address, phone) VALUES ($1, $2, $3, $4, $5) RETURNING id, name';
 
+
+        const result = await query(insertQuery, [name, email, hashedPassword, address, phone]);
 
         res.status(201).json({
             message: 'User registered successfully!',
-            userId: result.rows[0].id
+            user: result.rows[0]
         });
-
     } catch (error) {
-
-        console.error('Registration error:', error);
+        console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// The Login Route
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const userQuery = 'SELECT * FROM users WHERE email = $1';
+        const result = await query(userQuery, [email]);
+
+        if (result.rows.length === 0) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+        const user = result.rows[0];
+
+
+        const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+        const token = jwt.sign({ userId: user.id, email: user.email }, secretKey!, { expiresIn: '1h' });
+        res.json({ token, user: { id: user.id, email: user.email, name: user.name, address: user.address, phone: user.phone } });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+);
 
 
 
@@ -66,6 +84,10 @@ app.post('/register', async (req, res) => {
 app.get('/', (req, res) => {
     res.send('Welcome to MyMarket API! Go to /products to see the items.');
 });
+
+
+
+
 
 app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
